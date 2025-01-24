@@ -1,3 +1,5 @@
+# Marathon level converter
+
 Marathon level converter for Unity portal rendering.
 
 This project uses Weland to load and read map files.
