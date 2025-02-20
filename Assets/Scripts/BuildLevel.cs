@@ -45,15 +45,23 @@ public class BuildLevel : MonoBehaviour
 
     private List<Vector2> CWUVOffset = new List<Vector2>();
 
+    private List<Vector3> CWUVOffsetZ = new List<Vector3>();
+
     private List<Vector3> CCW = new List<Vector3>();
 
     private List<Vector2> CCWUV = new List<Vector2>();
 
     private List<Vector2> CCWUVOffset = new List<Vector2>();
 
+    private List<Vector3> CCWUVOffsetZ = new List<Vector3>();
+
     private List<Vector2> ceilinguvs = new List<Vector2>();
 
+    private List<Vector3> ceilinguvsz = new List<Vector3>();
+
     private List<Vector2> flooruvs = new List<Vector2>();
+
+    private List<Vector3> flooruvsz = new List<Vector3>();
 
     private List<Vector3> ceilingverts = new List<Vector3>();
 
@@ -103,7 +111,7 @@ public class BuildLevel : MonoBehaviour
         {
             public List<Vector3> Vertices = new List<Vector3>();
 
-            public List<Vector2> Textures = new List<Vector2>();
+            public List<Vector3> Textures = new List<Vector3>();
 
             public List<int> Triangles = new List<int>();
 
@@ -395,35 +403,29 @@ public class BuildLevel : MonoBehaviour
                         CW.Clear();
                         CWUV.Clear();
                         CWUVOffset.Clear();
+                        CWUVOffsetZ.Clear();
 
-                        CW.Add(new Vector3((float)X1, (float)YC1, (float)Z1));
-                        CW.Add(new Vector3((float)X1, (float)YC0, (float)Z1));
-                        CW.Add(new Vector3((float)X0, (float)YC0, (float)Z0));
-                        CW.Add(new Vector3((float)X0, (float)YC1, (float)Z0));
-
-                        LeftPlane = new Plane((CW[2] - CW[1]).normalized, CW[1]);
-                        TopPlane = new Plane((CW[1] - CW[0]).normalized, CW[1]);
-
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[0]) / Scale, TopPlane.GetDistanceToPoint(CW[0]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[1]) / Scale, TopPlane.GetDistanceToPoint(CW[1]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[2]) / Scale, TopPlane.GetDistanceToPoint(CW[2]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
+                        GetVertsCW(X0, X1, YC1, YC0, Z0, Z1);
 
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
-                            for (int e = 0; e < CWUV.Count; e++)
-                            {
-                                CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.X / 1024,
-                                CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Y / 1024 * -1));
-                            }
+                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
-
+                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                            level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                        {
+                            Render.Add(-1);
+                        }
+                        else
+                        {
+                            Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                        }
+                            
                         MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
                         MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
@@ -433,7 +435,23 @@ public class BuildLevel : MonoBehaviour
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
-                        mesh.SetUVs(0, CWUVOffset);
+
+                        if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                        {
+                             mesh.SetUVs(0, CWUV);
+                        }
+                        else
+                        {
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CWUVOffsetZ);
+                            }
+                        }
+                            
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -447,34 +465,28 @@ public class BuildLevel : MonoBehaviour
                         CW.Clear();
                         CWUV.Clear();
                         CWUVOffset.Clear();
+                        CWUVOffsetZ.Clear();
 
-                        CW.Add(new Vector3((float)X1, (float)YC1, (float)Z1));
-                        CW.Add(new Vector3((float)X1, (float)YC0, (float)Z1));
-                        CW.Add(new Vector3((float)X0, (float)YC0, (float)Z0));
-                        CW.Add(new Vector3((float)X0, (float)YC1, (float)Z0));
-
-                        LeftPlane = new Plane((CW[2] - CW[1]).normalized, CW[1]);
-                        TopPlane = new Plane((CW[1] - CW[0]).normalized, CW[1]);
-
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[0]) / Scale, TopPlane.GetDistanceToPoint(CW[0]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[1]) / Scale, TopPlane.GetDistanceToPoint(CW[1]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[2]) / Scale, TopPlane.GetDistanceToPoint(CW[2]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
+                        GetVertsCW(X0, X1, YC1, YC0, Z0, Z1);
 
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
-                            for (int e = 0; e < CWUV.Count; e++)
-                            {
-                                CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.X / 1024,
-                                CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Y / 1024 * -1));
-                            }
+                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                            level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                        {
+                            Render.Add(-1);
+                        }
+                        else
+                        {
+                            Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                        }
 
                         MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -485,7 +497,23 @@ public class BuildLevel : MonoBehaviour
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
-                        mesh.SetUVs(0, CWUVOffset);
+
+                        if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                        {
+                            mesh.SetUVs(0, CWUV);
+                        }
+                        else
+                        {
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CWUVOffsetZ);
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -503,40 +531,9 @@ public class BuildLevel : MonoBehaviour
                         CW.Clear();
                         CWUV.Clear();
                         CWUVOffset.Clear();
+                        CWUVOffsetZ.Clear();
 
-                        CW.Add(new Vector3((float)X1, (float)YF, (float)Z1));
-                        CW.Add(new Vector3((float)X1, (float)YC, (float)Z1));
-                        CW.Add(new Vector3((float)X0, (float)YC, (float)Z0));
-                        CW.Add(new Vector3((float)X0, (float)YF, (float)Z0));
-
-                        LeftPlane = new Plane((CW[2] - CW[1]).normalized, CW[1]);
-                        TopPlane = new Plane((CW[1] - CW[0]).normalized, CW[1]);
-
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[0]) / Scale, TopPlane.GetDistanceToPoint(CW[0]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[1]) / Scale, TopPlane.GetDistanceToPoint(CW[1]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[2]) / Scale, TopPlane.GetDistanceToPoint(CW[2]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
-
-                        if (level.Lines[i].ClockwisePolygonSideIndex != -1)
-                        {
-                            if (!level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
-                            {
-                                for (int e = 0; e < CWUV.Count; e++)
-                                {
-                                    CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.X / 1024,
-                                    CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Y / 1024 * -1));
-                                }
-                            }
-                            else if (!level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.IsEmpty())
-                            {
-                                for (int e = 0; e < CWUV.Count; e++)
-                                {
-                                    CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.X / 1024,
-                                    CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Y / 1024 * -1));
-                                }
-                            }
-
-                        }
+                        GetVertsCW(X0, X1, YF, YC, Z0, Z1);
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
 
@@ -551,7 +548,17 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].CounterclockwisePolygonOwner == -1)
                         {
-                            Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            {
+                                Render.Add(-1);
+                            }
+                            else
+                            {
+                                Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                            }
+
+                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
 
                             MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -563,7 +570,17 @@ public class BuildLevel : MonoBehaviour
                             {
                                 if (!level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.IsEmpty())
                                 {
-                                    Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                                    if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 28 ||
+                                        level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 30)
+                                    {
+                                        Render.Add(-1);
+                                    }
+                                    else
+                                    {
+                                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                                    }
+
+                                    MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent);
 
                                     MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Bitmap);
 
@@ -601,13 +618,27 @@ public class BuildLevel : MonoBehaviour
 
                         mesh.SetVertices(CW);
 
-                        if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                        if (level.Lines[i].CounterclockwisePolygonOwner == -1)
                         {
-                            mesh.SetUVs(0, CWUV);
+                            mesh.SetUVs(0, CWUVOffsetZ);
                         }
                         else
                         {
-                            mesh.SetUVs(0, CWUVOffset);
+                            if (level.Lines[i].ClockwisePolygonSideIndex != -1)
+                            {
+                                if (!level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
                         }
 
                         mesh.SetTriangles(triangles, 0);
@@ -627,28 +658,24 @@ public class BuildLevel : MonoBehaviour
                         CW.Clear();
                         CWUV.Clear();
                         CWUVOffset.Clear();
+                        CWUVOffsetZ.Clear();
 
-                        CW.Add(new Vector3((float)X1, (float)YF0, (float)Z1));
-                        CW.Add(new Vector3((float)X1, (float)YF1, (float)Z1));
-                        CW.Add(new Vector3((float)X0, (float)YF1, (float)Z0));
-                        CW.Add(new Vector3((float)X0, (float)YF0, (float)Z0));
-
-                        LeftPlane = new Plane((CW[2] - CW[1]).normalized, CW[1]);
-                        TopPlane = new Plane((CW[1] - CW[0]).normalized, CW[1]);
-
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[0]) / Scale, TopPlane.GetDistanceToPoint(CW[0]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[1]) / Scale, TopPlane.GetDistanceToPoint(CW[1]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[2]) / Scale, TopPlane.GetDistanceToPoint(CW[2]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
+                        GetVertsCW(X0, X1, YF0, YF1, Z0, Z1);
 
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
                             if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                for (int e = 0; e < CWUV.Count; e++)
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
                                 {
-                                    CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.X / 1024,
-                                    CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].ClockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
@@ -657,10 +684,16 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                for (int e = 0; e < CWUV.Count; e++)
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary);
+
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
                                 {
-                                    CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.X / 1024,
-                                    CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].ClockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Bitmap);
@@ -673,14 +706,49 @@ public class BuildLevel : MonoBehaviour
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
-
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
-                        mesh.SetUVs(0, CWUVOffset);
+
+                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
+                        {
+                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                }
+                            }
+                        }
+                        else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
+                        {
+                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                }
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -694,28 +762,24 @@ public class BuildLevel : MonoBehaviour
                         CW.Clear();
                         CWUV.Clear();
                         CWUVOffset.Clear();
+                        CWUVOffsetZ.Clear();
 
-                        CW.Add(new Vector3((float)X1, (float)YF0, (float)Z1));
-                        CW.Add(new Vector3((float)X1, (float)YF1, (float)Z1));
-                        CW.Add(new Vector3((float)X0, (float)YF1, (float)Z0));
-                        CW.Add(new Vector3((float)X0, (float)YF0, (float)Z0));
-
-                        LeftPlane = new Plane((CW[2] - CW[1]).normalized, CW[1]);
-                        TopPlane = new Plane((CW[1] - CW[0]).normalized, CW[1]);
-
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[0]) / Scale, TopPlane.GetDistanceToPoint(CW[0]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[1]) / Scale, TopPlane.GetDistanceToPoint(CW[1]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[2]) / Scale, TopPlane.GetDistanceToPoint(CW[2]) / Scale));
-                        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
+                        GetVertsCW(X0, X1, YF0, YF1, Z0, Z1);
 
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
                             if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                for (int e = 0; e < CWUV.Count; e++)
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
                                 {
-                                    CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.X / 1024,
-                                    CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].ClockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
@@ -724,10 +788,16 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                for (int e = 0; e < CWUV.Count; e++)
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary);
+
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
                                 {
-                                    CWUVOffset.Add(new Vector2(CWUV[e].x + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.X / 1024,
-                                    CWUV[e].y + (float)level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].ClockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Bitmap);
@@ -740,14 +810,49 @@ public class BuildLevel : MonoBehaviour
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
-
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
-                        mesh.SetUVs(0, CWUVOffset);
+
+                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
+                        {
+                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                }
+                            }
+                        }
+                        else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
+                        {
+                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                }
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -768,34 +873,28 @@ public class BuildLevel : MonoBehaviour
                         CCW.Clear();
                         CCWUV.Clear();
                         CCWUVOffset.Clear();
+                        CCWUVOffsetZ.Clear();
 
-                        CCW.Add(new Vector3((float)X0, (float)YC1, (float)Z0));
-                        CCW.Add(new Vector3((float)X0, (float)YC0, (float)Z0));
-                        CCW.Add(new Vector3((float)X1, (float)YC0, (float)Z1));
-                        CCW.Add(new Vector3((float)X1, (float)YC1, (float)Z1));
-
-                        LeftPlane = new Plane((CCW[2] - CCW[1]).normalized, CCW[1]);
-                        TopPlane = new Plane((CCW[1] - CCW[0]).normalized, CCW[1]);
-
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[0]) / Scale, TopPlane.GetDistanceToPoint(CCW[0]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[1]) / Scale, TopPlane.GetDistanceToPoint(CCW[1]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[2]) / Scale, TopPlane.GetDistanceToPoint(CCW[2]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
+                        GetVertsCCW(X0, X1, YC1, YC0, Z0, Z1);
 
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
-                            for (int e = 0; e < CCWUV.Count; e++)
-                            {
-                                CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.X / 1024,
-                                CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Y / 1024 * -1));
-                            }
+                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                            level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                        {
+                            Render.Add(-1);
+                        }
+                        else
+                        {
+                            Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                        }
 
                         MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -806,7 +905,23 @@ public class BuildLevel : MonoBehaviour
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CCW);
-                        mesh.SetUVs(0, CCWUVOffset);
+
+                        if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                        {
+                            mesh.SetUVs(0, CCWUV);
+                        }
+                        else
+                        {
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CCWUVOffsetZ);
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -820,34 +935,28 @@ public class BuildLevel : MonoBehaviour
                         CCW.Clear();
                         CCWUV.Clear();
                         CCWUVOffset.Clear();
+                        CCWUVOffsetZ.Clear();
 
-                        CCW.Add(new Vector3((float)X0, (float)YC1, (float)Z0));
-                        CCW.Add(new Vector3((float)X0, (float)YC0, (float)Z0));
-                        CCW.Add(new Vector3((float)X1, (float)YC0, (float)Z1));
-                        CCW.Add(new Vector3((float)X1, (float)YC1, (float)Z1));
-
-                        LeftPlane = new Plane((CCW[2] - CCW[1]).normalized, CCW[1]);
-                        TopPlane = new Plane((CCW[1] - CCW[0]).normalized, CCW[1]);
-
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[0]) / Scale, TopPlane.GetDistanceToPoint(CCW[0]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[1]) / Scale, TopPlane.GetDistanceToPoint(CCW[1]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[2]) / Scale, TopPlane.GetDistanceToPoint(CCW[2]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
+                        GetVertsCCW(X0, X1, YC1, YC0, Z0, Z1);
 
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
-                            for (int e = 0; e < CCWUV.Count; e++)
-                            {
-                                CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.X / 1024,
-                                CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Y / 1024 * -1));
-                            }
+                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                            level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                        {
+                            Render.Add(-1);
+                        }
+                        else
+                        {
+                            Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                        }
 
                         MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -858,7 +967,23 @@ public class BuildLevel : MonoBehaviour
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CCW);
-                        mesh.SetUVs(0, CCWUVOffset);
+
+                        if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                        {
+                            mesh.SetUVs(0, CCWUV);
+                        }
+                        else
+                        {
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CCWUVOffsetZ);
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -877,39 +1002,9 @@ public class BuildLevel : MonoBehaviour
                         CCW.Clear();
                         CCWUV.Clear();
                         CCWUVOffset.Clear();
+                        CCWUVOffsetZ.Clear();
 
-                        CCW.Add(new Vector3((float)X0, (float)YF, (float)Z0));
-                        CCW.Add(new Vector3((float)X0, (float)YC, (float)Z0));
-                        CCW.Add(new Vector3((float)X1, (float)YC, (float)Z1));
-                        CCW.Add(new Vector3((float)X1, (float)YF, (float)Z1));
-
-                        LeftPlane = new Plane((CCW[2] - CCW[1]).normalized, CCW[1]);
-                        TopPlane = new Plane((CCW[1] - CCW[0]).normalized, CCW[1]);
-
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[0]) / Scale, TopPlane.GetDistanceToPoint(CCW[0]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[1]) / Scale, TopPlane.GetDistanceToPoint(CCW[1]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[2]) / Scale, TopPlane.GetDistanceToPoint(CCW[2]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
-
-                        if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
-                        {
-                            if (!level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
-                            {
-                                for (int e = 0; e < CCWUV.Count; e++)
-                                {
-                                    CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.X / 1024,
-                                    CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Y / 1024 * -1));
-                                }
-                            }
-                            else if (!level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.IsEmpty())
-                            {
-                                for (int e = 0; e < CCWUV.Count; e++)
-                                {
-                                    CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.X / 1024,
-                                    CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Y / 1024 * -1));
-                                }
-                            }
-                        }
+                        GetVertsCCW(X0, X1, YF, YC, Z0, Z1);
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
@@ -924,7 +1019,17 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].ClockwisePolygonOwner == -1)
                         {
-                            Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            {
+                                Render.Add(-1);
+                            }
+                            else
+                            {
+                                Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                            }
+
+                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
 
                             MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -936,7 +1041,17 @@ public class BuildLevel : MonoBehaviour
                             {
                                 if (!level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.IsEmpty())
                                 {
-                                    Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                                    if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 28 ||
+                                        level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 30)
+                                    {
+                                        Render.Add(-1);
+                                    }
+                                    else
+                                    {
+                                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                                    }
+
+                                    MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent);
 
                                     MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Bitmap);
 
@@ -974,13 +1089,27 @@ public class BuildLevel : MonoBehaviour
 
                         mesh.SetVertices(CCW);
 
-                        if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                        if (level.Lines[i].ClockwisePolygonOwner == -1)
                         {
-                            mesh.SetUVs(0, CCWUV);
+                            mesh.SetUVs(0, CCWUVOffsetZ);
                         }
                         else
                         {
-                            mesh.SetUVs(0, CCWUVOffset);
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
+                            {
+                                if (!level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
                         }
 
                         mesh.SetTriangles(triangles, 0);
@@ -1000,28 +1129,24 @@ public class BuildLevel : MonoBehaviour
                         CCW.Clear();
                         CCWUV.Clear();
                         CCWUVOffset.Clear();
+                        CCWUVOffsetZ.Clear();
 
-                        CCW.Add(new Vector3((float)X0, (float)YF0, (float)Z0));
-                        CCW.Add(new Vector3((float)X0, (float)YF1, (float)Z0));
-                        CCW.Add(new Vector3((float)X1, (float)YF1, (float)Z1));
-                        CCW.Add(new Vector3((float)X1, (float)YF0, (float)Z1));
-
-                        LeftPlane = new Plane((CCW[2] - CCW[1]).normalized, CCW[1]);
-                        TopPlane = new Plane((CCW[1] - CCW[0]).normalized, CCW[1]);
-
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[0]) / Scale, TopPlane.GetDistanceToPoint(CCW[0]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[1]) / Scale, TopPlane.GetDistanceToPoint(CCW[1]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[2]) / Scale, TopPlane.GetDistanceToPoint(CCW[2]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
+                        GetVertsCCW(X0, X1, YF0, YF1, Z0, Z1);
 
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
                             if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                for (int e = 0; e < CCWUV.Count; e++)
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
                                 {
-                                    CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.X / 1024,
-                                    CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
@@ -1030,10 +1155,16 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                for (int e = 0; e < CCWUV.Count; e++)
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary);
+
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
                                 {
-                                    CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.X / 1024,
-                                    CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Bitmap);
@@ -1046,14 +1177,49 @@ public class BuildLevel : MonoBehaviour
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
-
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CCW);
-                        mesh.SetUVs(0, CCWUVOffset);
+
+                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
+                        {
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                }
+                            }
+                        }
+                        else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
+                        {
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                }
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -1067,28 +1233,24 @@ public class BuildLevel : MonoBehaviour
                         CCW.Clear();
                         CCWUV.Clear();
                         CCWUVOffset.Clear();
+                        CCWUVOffsetZ.Clear();
 
-                        CCW.Add(new Vector3((float)X0, (float)YF0, (float)Z0));
-                        CCW.Add(new Vector3((float)X0, (float)YF1, (float)Z0));
-                        CCW.Add(new Vector3((float)X1, (float)YF1, (float)Z1));
-                        CCW.Add(new Vector3((float)X1, (float)YF0, (float)Z1));
-
-                        LeftPlane = new Plane((CCW[2] - CCW[1]).normalized, CCW[1]);
-                        TopPlane = new Plane((CCW[1] - CCW[0]).normalized, CCW[1]);
-
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[0]) / Scale, TopPlane.GetDistanceToPoint(CCW[0]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[1]) / Scale, TopPlane.GetDistanceToPoint(CCW[1]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[2]) / Scale, TopPlane.GetDistanceToPoint(CCW[2]) / Scale));
-                        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
+                        GetVertsCCW(X0, X1, YF0, YF1, Z0, Z1);
 
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
                             if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                for (int e = 0; e < CCWUV.Count; e++)
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
                                 {
-                                    CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.X / 1024,
-                                    CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
@@ -1097,10 +1259,16 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                for (int e = 0; e < CCWUV.Count; e++)
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary);
+
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
+                                    level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
                                 {
-                                    CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.X / 1024,
-                                    CCWUV[e].y + (float)level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Y / 1024 * -1));
+                                    Render.Add(-1);
+                                }
+                                else
+                                {
+                                    Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                 }
 
                                 MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Bitmap);
@@ -1113,14 +1281,49 @@ public class BuildLevel : MonoBehaviour
 
                         Portal.Add(-1);
 
-                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
-
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CCW);
-                        mesh.SetUVs(0, CCWUVOffset);
+
+                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
+                        {
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                }
+                            }
+                        }
+                        else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
+                        {
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
+                            else
+                            {
+                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                }
+                            }
+                        }
+
                         mesh.SetTriangles(triangles, 0);
                         mesh.RecalculateNormals();
 
@@ -1141,8 +1344,10 @@ public class BuildLevel : MonoBehaviour
             {
                 floorverts.Clear();
                 flooruvs.Clear();
+                flooruvsz.Clear();
                 ceilingverts.Clear();
                 ceilinguvs.Clear();
+                ceilinguvsz.Clear();
 
                 for (int e = 0; e < level.Polygons[i].VertexCount; ++e)
                 {
@@ -1181,7 +1386,59 @@ public class BuildLevel : MonoBehaviour
 
                     Portal.Add(-1);
 
-                    Render.Add(i);
+                    if (level.Polygons[i].FloorTexture.Collection == 27 || level.Polygons[i].FloorTexture.Collection == 28 ||
+                        level.Polygons[i].FloorTexture.Collection == 29 || level.Polygons[i].FloorTexture.Collection == 30)
+                    {
+                        Render.Add(-1);
+                    }
+                    else
+                    {
+                        Render.Add(i);
+                    }
+
+                    if (level.Polygons[i].FloorTexture.Collection == 17)
+                    {
+                        for (int e = 0; e < flooruvs.Count; e++)
+                        {
+                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap));
+                        }
+                    }
+                    if (level.Polygons[i].FloorTexture.Collection == 18)
+                    {
+                        for (int e = 0; e < flooruvs.Count; e++)
+                        {
+                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 30));
+                        }
+                    }
+                    if (level.Polygons[i].FloorTexture.Collection == 19)
+                    {
+                        for (int e = 0; e < flooruvs.Count; e++)
+                        {
+                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 60));
+                        }
+                    }
+                    if (level.Polygons[i].FloorTexture.Collection == 20)
+                    {
+                        for (int e = 0; e < flooruvs.Count; e++)
+                        {
+                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 90));
+                        }
+                    }
+                    if (level.Polygons[i].FloorTexture.Collection == 21)
+                    {
+                        for (int e = 0; e < flooruvs.Count; e++)
+                        {
+                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 125));
+                        }
+                    }
+                    if (level.Polygons[i].FloorTexture.Collection == 27 || level.Polygons[i].FloorTexture.Collection == 28 ||
+                        level.Polygons[i].FloorTexture.Collection == 29 || level.Polygons[i].FloorTexture.Collection == 30)
+                    {
+                        for (int e = 0; e < flooruvs.Count; e++)
+                        {
+                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap));
+                        }
+                    }
 
                     MeshTexture.Add(level.Polygons[i].FloorTexture.Bitmap);
 
@@ -1192,7 +1449,7 @@ public class BuildLevel : MonoBehaviour
                     Mesh mesh = new Mesh();
 
                     mesh.SetVertices(floorverts);
-                    mesh.SetUVs(0, flooruvs);
+                    mesh.SetUVs(0, flooruvsz);
                     mesh.SetTriangles(floortri, 0);
                     mesh.RecalculateNormals();
 
@@ -1222,7 +1479,59 @@ public class BuildLevel : MonoBehaviour
 
                     Portal.Add(-1);
 
-                    Render.Add(i);
+                    if (level.Polygons[i].CeilingTexture.Collection == 27 || level.Polygons[i].CeilingTexture.Collection == 28 ||
+                        level.Polygons[i].CeilingTexture.Collection == 29 || level.Polygons[i].CeilingTexture.Collection == 30)
+                    {
+                        Render.Add(-1);
+                    }
+                    else
+                    {
+                        Render.Add(i);
+                    }
+
+                    if (level.Polygons[i].CeilingTexture.Collection == 17)
+                    {
+                        for (int e = 0; e < ceilinguvs.Count; e++)
+                        {
+                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap));
+                        }
+                    }
+                    if (level.Polygons[i].CeilingTexture.Collection == 18)
+                    {
+                        for (int e = 0; e < ceilinguvs.Count; e++)
+                        {
+                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 30));
+                        }
+                    }
+                    if (level.Polygons[i].CeilingTexture.Collection == 19)
+                    {
+                        for (int e = 0; e < ceilinguvs.Count; e++)
+                        {
+                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 60));
+                        }
+                    }
+                    if (level.Polygons[i].CeilingTexture.Collection == 20)
+                    {
+                        for (int e = 0; e < ceilinguvs.Count; e++)
+                        {
+                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 90));
+                        }
+                    }
+                    if (level.Polygons[i].CeilingTexture.Collection == 21)
+                    {
+                        for (int e = 0; e < ceilinguvs.Count; e++)
+                        {
+                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 125));
+                        }
+                    }
+                    if (level.Polygons[i].CeilingTexture.Collection == 27 || level.Polygons[i].CeilingTexture.Collection == 28 ||
+                        level.Polygons[i].CeilingTexture.Collection == 29 || level.Polygons[i].CeilingTexture.Collection == 30)
+                    {
+                        for (int e = 0; e < ceilinguvs.Count; e++)
+                        {
+                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap));
+                        }
+                    }
 
                     MeshTexture.Add(level.Polygons[i].CeilingTexture.Bitmap);
 
@@ -1233,7 +1542,7 @@ public class BuildLevel : MonoBehaviour
                     Mesh mesh = new Mesh();
 
                     mesh.SetVertices(ceilingverts);
-                    mesh.SetUVs(0, ceilinguvs);
+                    mesh.SetUVs(0, ceilinguvsz);
                     mesh.SetTriangles(ceilingtri, 0);
                     mesh.RecalculateNormals();
 
@@ -1242,6 +1551,146 @@ public class BuildLevel : MonoBehaviour
             }
 
             yield return null;
+        }
+    }
+
+    public void GetVertsCW(double X0, double X1, double V0, double V1, double Z0, double Z1)
+    {
+        CW.Add(new Vector3((float)X1, (float)V0, (float)Z1));
+        CW.Add(new Vector3((float)X1, (float)V1, (float)Z1));
+        CW.Add(new Vector3((float)X0, (float)V1, (float)Z0));
+        CW.Add(new Vector3((float)X0, (float)V0, (float)Z0));
+
+        LeftPlane = new Plane((CW[2] - CW[1]).normalized, CW[1]);
+        TopPlane = new Plane((CW[1] - CW[0]).normalized, CW[1]);
+
+        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[0]) / Scale, TopPlane.GetDistanceToPoint(CW[0]) / Scale));
+        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[1]) / Scale, TopPlane.GetDistanceToPoint(CW[1]) / Scale));
+        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[2]) / Scale, TopPlane.GetDistanceToPoint(CW[2]) / Scale));
+        CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
+    }
+
+    public void MakeSidesCW(Side.TextureDefinition sideDef)
+    {
+        for (int e = 0; e < CWUV.Count; e++)
+        {
+            CWUVOffset.Add(new Vector2(CWUV[e].x + (float)sideDef.X / 1024,
+            CWUV[e].y + (float)sideDef.Y / 1024 * -1));
+        }
+
+        if (sideDef.Texture.Collection == 17)
+        {
+            for (int e = 0; e < CWUVOffset.Count; e++)
+            {
+                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap));
+            }
+        }
+        if (sideDef.Texture.Collection == 18)
+        {
+            for (int e = 0; e < CWUVOffset.Count; e++)
+            {
+                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 30));
+            }
+        }
+        if (sideDef.Texture.Collection == 19)
+        {
+            for (int e = 0; e < CWUVOffset.Count; e++)
+            {
+                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 60));
+            }
+        }
+        if (sideDef.Texture.Collection == 20)
+        {
+            for (int e = 0; e < CWUVOffset.Count; e++)
+            {
+                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 90));
+            }
+        }
+        if (sideDef.Texture.Collection == 21)
+        {
+            for (int e = 0; e < CWUVOffset.Count; e++)
+            {
+                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 125));
+            }
+        }
+
+        if (sideDef.Texture.Collection == 27 || sideDef.Texture.Collection == 28 ||
+            sideDef.Texture.Collection == 29 || sideDef.Texture.Collection == 30)
+        {
+            for (int e = 0; e < CWUVOffset.Count; e++)
+            {
+                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap));
+            }
+        }
+    }
+
+    public void GetVertsCCW(double X0, double X1, double V0, double V1, double Z0, double Z1)
+    {
+        CCW.Add(new Vector3((float)X0, (float)V0, (float)Z0));
+        CCW.Add(new Vector3((float)X0, (float)V1, (float)Z0));
+        CCW.Add(new Vector3((float)X1, (float)V1, (float)Z1));
+        CCW.Add(new Vector3((float)X1, (float)V0, (float)Z1));
+
+        LeftPlane = new Plane((CCW[2] - CCW[1]).normalized, CCW[1]);
+        TopPlane = new Plane((CCW[1] - CCW[0]).normalized, CCW[1]);
+
+        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[0]) / Scale, TopPlane.GetDistanceToPoint(CCW[0]) / Scale));
+        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[1]) / Scale, TopPlane.GetDistanceToPoint(CCW[1]) / Scale));
+        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[2]) / Scale, TopPlane.GetDistanceToPoint(CCW[2]) / Scale));
+        CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
+    }
+
+    public void MakeSidesCCW(Side.TextureDefinition sideDef)
+    {
+        for (int e = 0; e < CCWUV.Count; e++)
+        {
+            CCWUVOffset.Add(new Vector2(CCWUV[e].x + (float)sideDef.X / 1024,
+            CCWUV[e].y + (float)sideDef.Y / 1024 * -1));
+        }
+
+        if (sideDef.Texture.Collection == 17)
+        {
+            for (int e = 0; e < CCWUVOffset.Count; e++)
+            {
+                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap));
+            }
+        }
+        if (sideDef.Texture.Collection == 18)
+        {
+            for (int e = 0; e < CCWUVOffset.Count; e++)
+            {
+                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 30));
+            }
+        }
+        if (sideDef.Texture.Collection == 19)
+        {
+            for (int e = 0; e < CCWUVOffset.Count; e++)
+            {
+                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 60));
+            }
+        }
+        if (sideDef.Texture.Collection == 20)
+        {
+            for (int e = 0; e < CCWUVOffset.Count; e++)
+            {
+                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 90));
+            }
+        }
+        if (sideDef.Texture.Collection == 21)
+        {
+            for (int e = 0; e < CCWUVOffset.Count; e++)
+            {
+                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 125));
+            }
+        }
+
+        if (sideDef.Texture.Collection == 27 || sideDef.Texture.Collection == 28 ||
+            sideDef.Texture.Collection == 29 || sideDef.Texture.Collection == 30)
+        {
+            for (int e = 0; e < CCWUVOffset.Count; e++)
+            {
+                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap));
+            }
         }
     }
 }
