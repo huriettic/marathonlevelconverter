@@ -37,6 +37,8 @@ public class BuildLevel : MonoBehaviour
 
     private List<int> Collisions = new List<int>();
 
+    private List<int> Transparency = new List<int>();
+
     private List<Mesh> meshes = new List<Mesh>();
 
     private List<Vector3> CW = new List<Vector3>();
@@ -79,6 +81,8 @@ public class BuildLevel : MonoBehaviour
 
     private List<int> Collision = new List<int>();
 
+    private List<int> Transparent = new List<int>();
+
     private RenderingData Rendering;
 
     [System.Serializable]
@@ -99,6 +103,7 @@ public class BuildLevel : MonoBehaviour
             public int Portal;
             public int Render;
             public int Collision;
+            public int Transparent;
             public int CollisionNumber;
             public int PortalNumber;
             public int MeshNumber;
@@ -128,6 +133,8 @@ public class BuildLevel : MonoBehaviour
             public List<int> MeshRenders = new List<int>();
 
             public List<int> MeshCollisions = new List<int>();
+
+            public List<int> MeshTransparent = new List<int>();
 
             public int PolyhedronNumber;
         }
@@ -238,6 +245,7 @@ public class BuildLevel : MonoBehaviour
             PolyData.Plane = Plane[e];
             PolyData.Portal = Portal[e];
             PolyData.Render = Render[e];
+            PolyData.Transparent = Transparent[e];
             PolyData.Collision = Collision[e];
             PolyData.MeshTexture = MeshTexture[e];
             PolyData.MeshTextureCollection = MeshTextureCollection[e];
@@ -322,6 +330,16 @@ public class BuildLevel : MonoBehaviour
                 }
             }
 
+            Transparency.Clear();
+
+            for (int e = 0; e < Transparent.Count; e++)
+            {
+                if (Transparent[e] == h)
+                {
+                    Transparency.Add(e);
+                }
+            }
+
             RenderingData.Polyhedron PolyObject = new RenderingData.Polyhedron();
 
             PolyObject.MeshPlanes.AddRange(Planes);
@@ -331,6 +349,8 @@ public class BuildLevel : MonoBehaviour
             PolyObject.MeshRenders.AddRange(Renders);
 
             PolyObject.MeshCollisions.AddRange(Collisions);
+
+            PolyObject.MeshTransparent.AddRange(Transparency);
 
             PolyObject.PolyhedronNumber = h;
 
@@ -432,6 +452,8 @@ public class BuildLevel : MonoBehaviour
 
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
+                        Transparent.Add(-1);
+
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
@@ -494,6 +516,8 @@ public class BuildLevel : MonoBehaviour
 
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
+                        Transparent.Add(-1);
+
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
@@ -552,10 +576,12 @@ public class BuildLevel : MonoBehaviour
                                 level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
                             {
                                 Render.Add(-1);
+                                Transparent.Add(-1);
                             }
                             else
                             {
                                 Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                                Transparent.Add(-1);
                             }
 
                             MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
@@ -574,10 +600,12 @@ public class BuildLevel : MonoBehaviour
                                         level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 30)
                                     {
                                         Render.Add(-1);
+                                        Transparent.Add(-1);
                                     }
                                     else
                                     {
-                                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                                        Render.Add(-1);
+                                        Transparent.Add(level.Lines[i].ClockwisePolygonOwner);
                                     }
 
                                     MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent);
@@ -590,6 +618,8 @@ public class BuildLevel : MonoBehaviour
                                 {
                                     Render.Add(-1);
 
+                                    Transparent.Add(-1);
+
                                     MeshTexture.Add(-1);
 
                                     MeshTextureCollection.Add(-1);
@@ -598,6 +628,8 @@ public class BuildLevel : MonoBehaviour
                             else
                             {
                                 Render.Add(-1);
+
+                                Transparent.Add(-1);
 
                                 MeshTexture.Add(-1);
 
@@ -708,6 +740,8 @@ public class BuildLevel : MonoBehaviour
 
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
+                        Transparent.Add(-1);
+
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
@@ -812,6 +846,8 @@ public class BuildLevel : MonoBehaviour
 
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
+                        Transparent.Add(-1);
+
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CW);
@@ -902,6 +938,8 @@ public class BuildLevel : MonoBehaviour
 
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
+                        Transparent.Add(-1);
+
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CCW);
@@ -964,6 +1002,8 @@ public class BuildLevel : MonoBehaviour
 
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
+                        Transparent.Add(-1);
+
                         Mesh mesh = new Mesh();
 
                         mesh.SetVertices(CCW);
@@ -1023,10 +1063,12 @@ public class BuildLevel : MonoBehaviour
                                 level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
                             {
                                 Render.Add(-1);
+                                Transparent.Add(-1);
                             }
                             else
                             {
                                 Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                                Transparent.Add(-1);
                             }
 
                             MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
@@ -1045,10 +1087,12 @@ public class BuildLevel : MonoBehaviour
                                         level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 30)
                                     {
                                         Render.Add(-1);
+                                        Transparent.Add(-1);
                                     }
                                     else
                                     {
-                                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                                        Render.Add(-1);
+                                        Transparent.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                     }
 
                                     MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent);
@@ -1061,6 +1105,8 @@ public class BuildLevel : MonoBehaviour
                                 {
                                     Render.Add(-1);
 
+                                    Transparent.Add(-1);
+
                                     MeshTexture.Add(-1);
 
                                     MeshTextureCollection.Add(-1);
@@ -1069,6 +1115,8 @@ public class BuildLevel : MonoBehaviour
                             else
                             {
                                 Render.Add(-1);
+
+                                Transparent.Add(-1);
 
                                 MeshTexture.Add(-1);
 
@@ -1181,6 +1229,8 @@ public class BuildLevel : MonoBehaviour
 
                         Mesh mesh = new Mesh();
 
+                        Transparent.Add(-1);
+
                         mesh.SetVertices(CCW);
 
                         if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
@@ -1282,6 +1332,8 @@ public class BuildLevel : MonoBehaviour
                         Portal.Add(-1);
 
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
+
+                        Transparent.Add(-1);
 
                         Mesh mesh = new Mesh();
 
@@ -1446,6 +1498,8 @@ public class BuildLevel : MonoBehaviour
 
                     Collision.Add(i);
 
+                    Transparent.Add(-1);
+
                     Mesh mesh = new Mesh();
 
                     mesh.SetVertices(floorverts);
@@ -1538,6 +1592,8 @@ public class BuildLevel : MonoBehaviour
                     MeshTextureCollection.Add(level.Polygons[i].CeilingTexture.Collection);
 
                     Collision.Add(i);
+
+                    Transparent.Add(-1);
 
                     Mesh mesh = new Mesh();
 
