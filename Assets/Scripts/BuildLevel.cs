@@ -47,7 +47,7 @@ public class BuildLevel : MonoBehaviour
 
     private List<Vector2> CWUVOffset = new List<Vector2>();
 
-    private List<Vector3> CWUVOffsetZ = new List<Vector3>();
+    private List<Vector4> CWUVOffsetZ = new List<Vector4>();
 
     private List<Vector3> CCW = new List<Vector3>();
 
@@ -55,15 +55,15 @@ public class BuildLevel : MonoBehaviour
 
     private List<Vector2> CCWUVOffset = new List<Vector2>();
 
-    private List<Vector3> CCWUVOffsetZ = new List<Vector3>();
+    private List<Vector4> CCWUVOffsetZ = new List<Vector4>();
 
     private List<Vector2> ceilinguvs = new List<Vector2>();
 
-    private List<Vector3> ceilinguvsz = new List<Vector3>();
+    private List<Vector4> ceilinguvsz = new List<Vector4>();
 
     private List<Vector2> flooruvs = new List<Vector2>();
 
-    private List<Vector3> flooruvsz = new List<Vector3>();
+    private List<Vector4> flooruvsz = new List<Vector4>();
 
     private List<Vector3> ceilingverts = new List<Vector3>();
 
@@ -96,6 +96,8 @@ public class BuildLevel : MonoBehaviour
 
         public List<PlayerStarts> PlayerPosition = new List<PlayerStarts>();
 
+        public List<PolygonLight> LightColor = new List<PolygonLight>();
+
         [System.Serializable]
         public class PolygonData
         {
@@ -116,7 +118,7 @@ public class BuildLevel : MonoBehaviour
         {
             public List<Vector3> Vertices = new List<Vector3>();
 
-            public List<Vector3> Textures = new List<Vector3>();
+            public List<Vector4> Textures = new List<Vector4>();
 
             public List<int> Triangles = new List<int>();
 
@@ -144,6 +146,12 @@ public class BuildLevel : MonoBehaviour
         {
             public Vector3 Position;
             public int Sector;
+        }
+
+        [System.Serializable]
+        public class PolygonLight
+        {
+            public Color MeshLight;
         }
     }
 
@@ -371,6 +379,22 @@ public class BuildLevel : MonoBehaviour
        SaveLevel();
     }
 
+    IEnumerator BuildLights()
+    {
+        for (int i = 0; i < level.Lights.Count; i++)
+        {
+            Weland.Light.Function alight = level.Lights[i].PrimaryActive;
+
+            RenderingData.PolygonLight color = new RenderingData.PolygonLight();
+
+            color.MeshLight = new Color((float)alight.Intensity, (float)alight.Intensity, (float)alight.Intensity, 1.0f);
+
+            Rendering.LightColor.Add(color);
+        }
+
+        yield return null;
+    }
+
     IEnumerator BuildObjects()
     {
         for (int i = 0; i < level.Objects.Count; i++)
@@ -397,6 +421,8 @@ public class BuildLevel : MonoBehaviour
         StartCoroutine(BuildPolygons());
 
         StartCoroutine(BuildObjects());
+
+        StartCoroutine(BuildLights());
 
         yield return null;
     }
@@ -429,7 +455,7 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
-                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
@@ -493,7 +519,7 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
-                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
@@ -584,7 +610,7 @@ public class BuildLevel : MonoBehaviour
                                 Transparent.Add(-1);
                             }
 
-                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
 
                             MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -608,7 +634,7 @@ public class BuildLevel : MonoBehaviour
                                         Transparent.Add(level.Lines[i].ClockwisePolygonOwner);
                                     }
 
-                                    MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent);
+                                    MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].TransparentLightsourceIndex);
 
                                     MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Bitmap);
 
@@ -698,7 +724,7 @@ public class BuildLevel : MonoBehaviour
                         {
                             if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
@@ -716,7 +742,7 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary);
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].SecondaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
@@ -804,7 +830,7 @@ public class BuildLevel : MonoBehaviour
                         {
                             if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary);
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
@@ -822,7 +848,7 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary);
+                                MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].SecondaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
@@ -915,7 +941,7 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
-                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
@@ -979,7 +1005,7 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
-                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
@@ -1071,7 +1097,7 @@ public class BuildLevel : MonoBehaviour
                                 Transparent.Add(-1);
                             }
 
-                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
 
                             MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
 
@@ -1095,7 +1121,7 @@ public class BuildLevel : MonoBehaviour
                                         Transparent.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                     }
 
-                                    MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent);
+                                    MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].TransparentLightsourceIndex);
 
                                     MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Bitmap);
 
@@ -1185,7 +1211,7 @@ public class BuildLevel : MonoBehaviour
                         {
                             if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
@@ -1203,7 +1229,7 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary);
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].SecondaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
@@ -1291,7 +1317,7 @@ public class BuildLevel : MonoBehaviour
                         {
                             if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary);
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
@@ -1309,7 +1335,7 @@ public class BuildLevel : MonoBehaviour
                             }
                             else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
                             {
-                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary);
+                                MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].SecondaryLightsourceIndex);
 
                                 if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 28 ||
                                     level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection == 30)
@@ -1452,35 +1478,35 @@ public class BuildLevel : MonoBehaviour
                     {
                         for (int e = 0; e < flooruvs.Count; e++)
                         {
-                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap));
+                            flooruvsz.Add(new Vector4(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap, level.Polygons[i].FloorLight));
                         }
                     }
                     if (level.Polygons[i].FloorTexture.Collection == 18)
                     {
                         for (int e = 0; e < flooruvs.Count; e++)
                         {
-                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 30));
+                            flooruvsz.Add(new Vector4(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 30, level.Polygons[i].FloorLight));
                         }
                     }
                     if (level.Polygons[i].FloorTexture.Collection == 19)
                     {
                         for (int e = 0; e < flooruvs.Count; e++)
                         {
-                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 60));
+                            flooruvsz.Add(new Vector4(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 60, level.Polygons[i].FloorLight));
                         }
                     }
                     if (level.Polygons[i].FloorTexture.Collection == 20)
                     {
                         for (int e = 0; e < flooruvs.Count; e++)
                         {
-                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 90));
+                            flooruvsz.Add(new Vector4(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 90, level.Polygons[i].FloorLight));
                         }
                     }
                     if (level.Polygons[i].FloorTexture.Collection == 21)
                     {
                         for (int e = 0; e < flooruvs.Count; e++)
                         {
-                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 125));
+                            flooruvsz.Add(new Vector4(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap + 125, level.Polygons[i].FloorLight));
                         }
                     }
                     if (level.Polygons[i].FloorTexture.Collection == 27 || level.Polygons[i].FloorTexture.Collection == 28 ||
@@ -1488,7 +1514,7 @@ public class BuildLevel : MonoBehaviour
                     {
                         for (int e = 0; e < flooruvs.Count; e++)
                         {
-                            flooruvsz.Add(new Vector3(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap));
+                            flooruvsz.Add(new Vector4(flooruvs[e].x, flooruvs[e].y, level.Polygons[i].FloorTexture.Bitmap, level.Polygons[i].FloorLight));
                         }
                     }
 
@@ -1547,35 +1573,35 @@ public class BuildLevel : MonoBehaviour
                     {
                         for (int e = 0; e < ceilinguvs.Count; e++)
                         {
-                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap));
+                            ceilinguvsz.Add(new Vector4(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap, level.Polygons[i].CeilingLight));
                         }
                     }
                     if (level.Polygons[i].CeilingTexture.Collection == 18)
                     {
                         for (int e = 0; e < ceilinguvs.Count; e++)
                         {
-                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 30));
+                            ceilinguvsz.Add(new Vector4(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 30, level.Polygons[i].CeilingLight));
                         }
                     }
                     if (level.Polygons[i].CeilingTexture.Collection == 19)
                     {
                         for (int e = 0; e < ceilinguvs.Count; e++)
                         {
-                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 60));
+                            ceilinguvsz.Add(new Vector4(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 60, level.Polygons[i].CeilingLight));
                         }
                     }
                     if (level.Polygons[i].CeilingTexture.Collection == 20)
                     {
                         for (int e = 0; e < ceilinguvs.Count; e++)
                         {
-                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 90));
+                            ceilinguvsz.Add(new Vector4(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 90, level.Polygons[i].CeilingLight));
                         }
                     }
                     if (level.Polygons[i].CeilingTexture.Collection == 21)
                     {
                         for (int e = 0; e < ceilinguvs.Count; e++)
                         {
-                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 125));
+                            ceilinguvsz.Add(new Vector4(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap + 125, level.Polygons[i].CeilingLight));
                         }
                     }
                     if (level.Polygons[i].CeilingTexture.Collection == 27 || level.Polygons[i].CeilingTexture.Collection == 28 ||
@@ -1583,7 +1609,7 @@ public class BuildLevel : MonoBehaviour
                     {
                         for (int e = 0; e < ceilinguvs.Count; e++)
                         {
-                            ceilinguvsz.Add(new Vector3(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap));
+                            ceilinguvsz.Add(new Vector4(ceilinguvs[e].x, ceilinguvs[e].y, level.Polygons[i].CeilingTexture.Bitmap, level.Polygons[i].CeilingLight));
                         }
                     }
 
@@ -1626,7 +1652,7 @@ public class BuildLevel : MonoBehaviour
         CWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CW[3]) / Scale, TopPlane.GetDistanceToPoint(CW[3]) / Scale));
     }
 
-    public void MakeSidesCW(Side.TextureDefinition sideDef)
+    public void MakeSidesCW(Side.TextureDefinition sideDef, int Light)
     {
         for (int e = 0; e < CWUV.Count; e++)
         {
@@ -1638,35 +1664,35 @@ public class BuildLevel : MonoBehaviour
         {
             for (int e = 0; e < CWUVOffset.Count; e++)
             {
-                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap));
+                CWUVOffsetZ.Add(new Vector4(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap, Light));
             }
         }
         if (sideDef.Texture.Collection == 18)
         {
             for (int e = 0; e < CWUVOffset.Count; e++)
             {
-                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 30));
+                CWUVOffsetZ.Add(new Vector4(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 30, Light));
             }
         }
         if (sideDef.Texture.Collection == 19)
         {
             for (int e = 0; e < CWUVOffset.Count; e++)
             {
-                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 60));
+                CWUVOffsetZ.Add(new Vector4(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 60, Light));
             }
         }
         if (sideDef.Texture.Collection == 20)
         {
             for (int e = 0; e < CWUVOffset.Count; e++)
             {
-                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 90));
+                CWUVOffsetZ.Add(new Vector4(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 90, Light));
             }
         }
         if (sideDef.Texture.Collection == 21)
         {
             for (int e = 0; e < CWUVOffset.Count; e++)
             {
-                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 125));
+                CWUVOffsetZ.Add(new Vector4(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap + 125, Light));
             }
         }
 
@@ -1675,7 +1701,7 @@ public class BuildLevel : MonoBehaviour
         {
             for (int e = 0; e < CWUVOffset.Count; e++)
             {
-                CWUVOffsetZ.Add(new Vector3(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap));
+                CWUVOffsetZ.Add(new Vector4(CWUVOffset[e].x, CWUVOffset[e].y, sideDef.Texture.Bitmap, Light));
             }
         }
     }
@@ -1696,7 +1722,7 @@ public class BuildLevel : MonoBehaviour
         CCWUV.Add(new Vector2(LeftPlane.GetDistanceToPoint(CCW[3]) / Scale, TopPlane.GetDistanceToPoint(CCW[3]) / Scale));
     }
 
-    public void MakeSidesCCW(Side.TextureDefinition sideDef)
+    public void MakeSidesCCW(Side.TextureDefinition sideDef, int Light)
     {
         for (int e = 0; e < CCWUV.Count; e++)
         {
@@ -1708,35 +1734,35 @@ public class BuildLevel : MonoBehaviour
         {
             for (int e = 0; e < CCWUVOffset.Count; e++)
             {
-                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap));
+                CCWUVOffsetZ.Add(new Vector4(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap, Light));
             }
         }
         if (sideDef.Texture.Collection == 18)
         {
             for (int e = 0; e < CCWUVOffset.Count; e++)
             {
-                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 30));
+                CCWUVOffsetZ.Add(new Vector4(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 30, Light));
             }
         }
         if (sideDef.Texture.Collection == 19)
         {
             for (int e = 0; e < CCWUVOffset.Count; e++)
             {
-                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 60));
+                CCWUVOffsetZ.Add(new Vector4(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 60, Light));
             }
         }
         if (sideDef.Texture.Collection == 20)
         {
             for (int e = 0; e < CCWUVOffset.Count; e++)
             {
-                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 90));
+                CCWUVOffsetZ.Add(new Vector4(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 90, Light));
             }
         }
         if (sideDef.Texture.Collection == 21)
         {
             for (int e = 0; e < CCWUVOffset.Count; e++)
             {
-                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 125));
+                CCWUVOffsetZ.Add(new Vector4(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap + 125, Light));
             }
         }
 
@@ -1745,7 +1771,7 @@ public class BuildLevel : MonoBehaviour
         {
             for (int e = 0; e < CCWUVOffset.Count; e++)
             {
-                CCWUVOffsetZ.Add(new Vector3(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap));
+                CCWUVOffsetZ.Add(new Vector4(CCWUVOffset[e].x, CCWUVOffset[e].y, sideDef.Texture.Bitmap, Light));
             }
         }
     }
