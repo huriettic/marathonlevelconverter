@@ -456,25 +456,39 @@ public class BuildLevel : MonoBehaviour
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
                             MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
+
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                            else
+                            {
+                                Render.Add(level.Lines[i].ClockwisePolygonOwner);
+
+                                MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
+
+                                MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
 
                         Portal.Add(-1);
 
-                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
-                            level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
-                        {
-                            Render.Add(-1);
-                        }
-                        else
-                        {
-                            Render.Add(level.Lines[i].ClockwisePolygonOwner);
-                        }
-                            
-                        MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
-
-                        MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
+                        
 
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
@@ -520,25 +534,37 @@ public class BuildLevel : MonoBehaviour
                         if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
                             MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
+
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                            else
+                            {
+                                Render.Add(level.Lines[i].ClockwisePolygonOwner);
+
+                                MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
+
+                                MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
 
                         Portal.Add(-1);
-
-                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
-                            level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
-                        {
-                            Render.Add(-1);
-                        }
-                        else
-                        {
-                            Render.Add(level.Lines[i].ClockwisePolygonOwner);
-                        }
-
-                        MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
-
-                        MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
 
                         Collision.Add(level.Lines[i].ClockwisePolygonOwner);
 
@@ -573,7 +599,7 @@ public class BuildLevel : MonoBehaviour
                 if (level.Lines[i].LowestAdjacentCeiling != level.Lines[i].HighestAdjacentFloor)
                 {
                     if (level.Polygons[level.Lines[i].ClockwisePolygonOwner].CeilingHeight > level.Lines[i].HighestAdjacentFloor &&
-                    level.Polygons[level.Lines[i].ClockwisePolygonOwner].FloorHeight < level.Lines[i].LowestAdjacentCeiling)
+                        level.Polygons[level.Lines[i].ClockwisePolygonOwner].FloorHeight < level.Lines[i].LowestAdjacentCeiling)
                     {
                         double YC = (float)level.Lines[i].LowestAdjacentCeiling / 1024 * Scale;
                         double YF = (float)level.Lines[i].HighestAdjacentFloor / 1024 * Scale;
@@ -598,23 +624,51 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].CounterclockwisePolygonOwner == -1)
                         {
-                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
-                                level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                             {
-                                Render.Add(-1);
-                                Transparent.Add(-1);
+                                if (!level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                        level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                                    {
+                                        Render.Add(-1);
+
+                                        Transparent.Add(-1);
+                                    }
+                                    else
+                                    {
+                                        Render.Add(level.Lines[i].ClockwisePolygonOwner);
+
+                                        Transparent.Add(-1);
+                                    }
+
+                                    MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
+
+                                    MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
+
+                                    MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
+                                }
+                                else
+                                {
+                                    Render.Add(-1);
+
+                                    Transparent.Add(-1);
+
+                                    MeshTexture.Add(-1);
+
+                                    MeshTextureCollection.Add(-1);
+                                } 
                             }
                             else
                             {
-                                Render.Add(level.Lines[i].ClockwisePolygonOwner);
+                                Render.Add(-1);
+
                                 Transparent.Add(-1);
-                            }
 
-                            MakeSidesCW(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].ClockwisePolygonSideIndex].PrimaryLightsourceIndex);
+                                MeshTexture.Add(-1);
 
-                            MeshTexture.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Bitmap);
-
-                            MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.Collection);
+                                MeshTextureCollection.Add(-1);
+                            }  
                         }
                         else
                         {
@@ -626,11 +680,13 @@ public class BuildLevel : MonoBehaviour
                                         level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 29 || level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Transparent.Texture.Collection == 30)
                                     {
                                         Render.Add(-1);
+
                                         Transparent.Add(-1);
                                     }
                                     else
                                     {
                                         Render.Add(-1);
+
                                         Transparent.Add(level.Lines[i].ClockwisePolygonOwner);
                                     }
 
@@ -678,7 +734,21 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].CounterclockwisePolygonOwner == -1)
                         {
-                            mesh.SetUVs(0, CWUVOffsetZ);
+                            if (level.Lines[i].ClockwisePolygonSideIndex != -1)
+                            {
+                                if (!level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CWUV);
+                            }
                         }
                         else
                         {
@@ -758,6 +828,22 @@ public class BuildLevel : MonoBehaviour
 
                                 MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection);
                             }
+                            else
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
@@ -772,41 +858,52 @@ public class BuildLevel : MonoBehaviour
 
                         mesh.SetVertices(CW);
 
-                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
+                        if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
-                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                mesh.SetUVs(0, CWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                if (level.Lines[i].ClockwisePolygonSideIndex == -1)
                                 {
                                     mesh.SetUVs(0, CWUV);
                                 }
                                 else
                                 {
-                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                    if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CWUVOffsetZ);
+                                    }
                                 }
+                            }
+                            else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
+                            {
+                                if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                                else
+                                {
+                                    if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CWUVOffsetZ);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CWUV);
                             }
                         }
-                        else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
+                        else
                         {
-                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
-                            {
-                                mesh.SetUVs(0, CWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
-                                {
-                                    mesh.SetUVs(0, CWUV);
-                                }
-                                else
-                                {
-                                    mesh.SetUVs(0, CWUVOffsetZ);
-                                }
-                            }
+                            mesh.SetUVs(0, CWUV);
                         }
 
                         mesh.SetTriangles(triangles, 0);
@@ -864,6 +961,22 @@ public class BuildLevel : MonoBehaviour
 
                                 MeshTextureCollection.Add(level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.Collection);
                             }
+                            else
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].ClockwisePolygonOwner);
@@ -878,41 +991,52 @@ public class BuildLevel : MonoBehaviour
 
                         mesh.SetVertices(CW);
 
-                        if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
+                        if (level.Lines[i].ClockwisePolygonSideIndex != -1)
                         {
-                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                            if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                mesh.SetUVs(0, CWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                if (level.Lines[i].ClockwisePolygonSideIndex == -1)
                                 {
                                     mesh.SetUVs(0, CWUV);
                                 }
                                 else
                                 {
-                                    mesh.SetUVs(0, CWUVOffsetZ);
+                                    if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CWUVOffsetZ);
+                                    }
                                 }
+                            }
+                            else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
+                            {
+                                if (level.Lines[i].ClockwisePolygonSideIndex == -1)
+                                {
+                                    mesh.SetUVs(0, CWUV);
+                                }
+                                else
+                                {
+                                    if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CWUVOffsetZ);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CWUV);  
                             }
                         }
-                        else if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Type == SideType.Split)
+                        else
                         {
-                            if (level.Lines[i].ClockwisePolygonSideIndex == -1)
-                            {
-                                mesh.SetUVs(0, CWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].ClockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
-                                {
-                                    mesh.SetUVs(0, CWUV);
-                                }
-                                else
-                                {
-                                    mesh.SetUVs(0, CWUVOffsetZ);
-                                }
-                            }
+                            mesh.SetUVs(0, CWUV);
                         }
 
                         mesh.SetTriangles(triangles, 0);
@@ -942,25 +1066,37 @@ public class BuildLevel : MonoBehaviour
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
                             MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
+
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                            else
+                            {
+                                Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+
+                                MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
+
+                                MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
                         Portal.Add(-1);
-
-                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
-                            level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
-                        {
-                            Render.Add(-1);
-                        }
-                        else
-                        {
-                            Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
-                        }
-
-                        MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
-
-                        MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection);
 
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
@@ -1006,25 +1142,37 @@ public class BuildLevel : MonoBehaviour
                         if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
                             MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
+
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                            else
+                            {
+                                Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+
+                                MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
+
+                                MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
                         Portal.Add(-1);
-
-                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
-                            level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
-                        {
-                            Render.Add(-1);
-                        }
-                        else
-                        {
-                            Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
-                        }
-
-                        MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
-
-                        MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection);
 
                         Collision.Add(level.Lines[i].CounterclockwisePolygonOwner);
 
@@ -1085,23 +1233,51 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].ClockwisePolygonOwner == -1)
                         {
-                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
-                                level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                             {
-                                Render.Add(-1);
-                                Transparent.Add(-1);
+                                if (!level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 27 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 28 ||
+                                        level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection == 30)
+                                    {
+                                        Render.Add(-1);
+
+                                        Transparent.Add(-1);
+                                    }
+                                    else
+                                    {
+                                        Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+
+                                        Transparent.Add(-1);
+                                    }
+
+                                    MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
+
+                                    MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
+
+                                    MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection);
+                                }
+                                else
+                                {
+                                    Render.Add(-1);
+
+                                    Transparent.Add(-1);
+
+                                    MeshTexture.Add(-1);
+
+                                    MeshTextureCollection.Add(-1);
+                                }    
                             }
                             else
                             {
-                                Render.Add(level.Lines[i].CounterclockwisePolygonOwner);
+                                Render.Add(-1);
+
                                 Transparent.Add(-1);
-                            }
 
-                            MakeSidesCCW(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary, level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].PrimaryLightsourceIndex);
+                                MeshTexture.Add(-1);
 
-                            MeshTexture.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Bitmap);
-
-                            MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.Collection);
+                                MeshTextureCollection.Add(-1);
+                            }   
                         }
                         else
                         {
@@ -1113,11 +1289,13 @@ public class BuildLevel : MonoBehaviour
                                         level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 29 || level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Transparent.Texture.Collection == 30)
                                     {
                                         Render.Add(-1);
+
                                         Transparent.Add(-1);
                                     }
                                     else
                                     {
                                         Render.Add(-1);
+
                                         Transparent.Add(level.Lines[i].CounterclockwisePolygonOwner);
                                     }
 
@@ -1165,7 +1343,21 @@ public class BuildLevel : MonoBehaviour
 
                         if (level.Lines[i].ClockwisePolygonOwner == -1)
                         {
-                            mesh.SetUVs(0, CCWUVOffsetZ);
+                            if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
+                            {
+                                if (!level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                {
+                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                }
+                                else
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CCWUV);
+                            }
                         }
                         else
                         {
@@ -1245,6 +1437,22 @@ public class BuildLevel : MonoBehaviour
 
                                 MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection);
                             }
+                            else
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
@@ -1259,41 +1467,52 @@ public class BuildLevel : MonoBehaviour
 
                         mesh.SetVertices(CCW);
 
-                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
+                        if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
-                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                mesh.SetUVs(0, CCWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
                                 {
                                     mesh.SetUVs(0, CCWUV);
                                 }
                                 else
                                 {
-                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                    if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CCWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CCWUVOffsetZ);
+                                    }
                                 }
+                            }
+                            else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
+                            {
+                                if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                                else
+                                {
+                                    if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CCWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CCWUVOffsetZ);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CCWUV);
                             }
                         }
-                        else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
+                        else
                         {
-                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
-                            {
-                                mesh.SetUVs(0, CCWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
-                                {
-                                    mesh.SetUVs(0, CCWUV);
-                                }
-                                else
-                                {
-                                    mesh.SetUVs(0, CCWUVOffsetZ);
-                                }
-                            }
+                            mesh.SetUVs(0, CCWUV);
                         }
 
                         mesh.SetTriangles(triangles, 0);
@@ -1351,6 +1570,22 @@ public class BuildLevel : MonoBehaviour
 
                                 MeshTextureCollection.Add(level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.Collection);
                             }
+                            else
+                            {
+                                Render.Add(-1);
+
+                                MeshTexture.Add(-1);
+
+                                MeshTextureCollection.Add(-1);
+                            }
+                        }
+                        else
+                        {
+                            Render.Add(-1);
+
+                            MeshTexture.Add(-1);
+
+                            MeshTextureCollection.Add(-1);
                         }
 
                         Plane.Add(level.Lines[i].CounterclockwisePolygonOwner);
@@ -1365,41 +1600,52 @@ public class BuildLevel : MonoBehaviour
 
                         mesh.SetVertices(CCW);
 
-                        if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
+                        if (level.Lines[i].CounterclockwisePolygonSideIndex != -1)
                         {
-                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                            if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Low)
                             {
-                                mesh.SetUVs(0, CCWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
                                 {
                                     mesh.SetUVs(0, CCWUV);
                                 }
                                 else
                                 {
-                                    mesh.SetUVs(0, CCWUVOffsetZ);
+                                    if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Primary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CCWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CCWUVOffsetZ);
+                                    }
                                 }
+                            }
+                            else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
+                            {
+                                if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
+                                {
+                                    mesh.SetUVs(0, CCWUV);
+                                }
+                                else
+                                {
+                                    if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
+                                    {
+                                        mesh.SetUVs(0, CCWUV);
+                                    }
+                                    else
+                                    {
+                                        mesh.SetUVs(0, CCWUVOffsetZ);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                mesh.SetUVs(0, CCWUV);
                             }
                         }
-                        else if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Type == SideType.Split)
+                        else
                         {
-                            if (level.Lines[i].CounterclockwisePolygonSideIndex == -1)
-                            {
-                                mesh.SetUVs(0, CCWUV);
-                            }
-                            else
-                            {
-                                if (level.Sides[level.Lines[i].CounterclockwisePolygonSideIndex].Secondary.Texture.IsEmpty())
-                                {
-                                    mesh.SetUVs(0, CCWUV);
-                                }
-                                else
-                                {
-                                    mesh.SetUVs(0, CCWUVOffsetZ);
-                                }
-                            }
+                            mesh.SetUVs(0, CCWUV);
                         }
 
                         mesh.SetTriangles(triangles, 0);
@@ -1449,15 +1695,11 @@ public class BuildLevel : MonoBehaviour
                 {
                     floortri.Clear();
 
-                    for (int e = 2; e < floorverts.Count; e++)
+                    for (int e = 0; e < floorverts.Count - 2; e++)
                     {
-                        int a = 0;
-                        int b = e - 1;
-                        int c = e;
-
-                        floortri.Add(a);
-                        floortri.Add(b);
-                        floortri.Add(c);
+                        floortri.Add(0);
+                        floortri.Add(e + 1);
+                        floortri.Add(e + 2);
                     }
 
                     Plane.Add(i);
@@ -1544,15 +1786,11 @@ public class BuildLevel : MonoBehaviour
 
                     ceilingtri.Clear();
 
-                    for (int e = 2; e < ceilingverts.Count; e++)
+                    for (int e = 0; e < ceilingverts.Count - 2; e++)
                     {
-                        int a = 0;
-                        int b = e - 1;
-                        int c = e;
-
-                        ceilingtri.Add(a);
-                        ceilingtri.Add(b);
-                        ceilingtri.Add(c);
+                        ceilingtri.Add(0);
+                        ceilingtri.Add(e + 1);
+                        ceilingtri.Add(e + 2);
                     }
 
                     Plane.Add(i);
