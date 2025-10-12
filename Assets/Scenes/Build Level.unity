@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Scale: 2.5
-  Name: Tutorial
+  Name: Hyper Cube
   LevelNumber: 0
 --- !u!4 &1283736405
 Transform:
